@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+      <script src="https://cdn.tailwindcss.com"></script>
+    <title>{% block title %}Project Management{% endblock %}</title>
+  </head>
+  <body class="h-screen flex flex-col">
+    <header class="w-full h-[160px] fixed-top bg-gradient-to-t from-purple-600 to-indigo-900 text-white">
+      <div class="max-w-[80%] m-auto h-full flex items-center justify-between">
+        <div class="flex items-center justify-between gap-4 w-full">
+          <h1 class="text-4xl font-bold">PManagement</h1>
+          {% if session[user_id] %}
+          <nav>
+            <a>Home</a>
+            <a>Profile</a>
+            <button>Add Team</button>
+            <button>Add Project</button>
+          </nav>
+        </div>
+        <div>
+          <a href="/logout">
+            <button class="border border-pink-600 rounded-md py-1 px-3 bg-pink-600 hover:border-pink-700
+            hover:bg-pink-700">Logout</button>
+          </a>
+        </div>
+        {% else %}
+        <div class="flex items-center gap-4">
+          <a href="/login">
+            <button class="border border-pink-600 rounded-md py-1 px-3 bg-pink-600 hover:border-pink-700
+            hover:bg-pink-700">Login</button>
+          </a>
+          <a href="/register">
+            <button class="border border-pink-600 rounded-md py-1 px-3 bg-pink-600 hover:border-pink-700
+            hover:bg-pink-700">Register</button>
+          </a>
+        </div>
+        {% endif %}
+      </div>
+    </header>
+    <main class="grow bg-purple-600 text-white">
+      <div class="max-w-[80%] m-auto h-full">
+        {% block main %}{% endblock %}
+      </div>
+    </main>
+  </body>
+</html>
