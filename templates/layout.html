@@ -8,7 +8,7 @@
     <title>{% block title %}Project Management{% endblock %}</title>
   </head>
   <body class="h-screen flex flex-col">
-    <header class="w-full h-[160px] fixed-top bg-gradient-to-t from-purple-600 to-indigo-900 text-white">
+    <header class="w-full h-[160px] fixed-top bg-purple-600 text-white">
       <div class="max-w-[80%] m-auto h-full flex items-center justify-between">
         <div class="flex items-center justify-between gap-4 w-full">
           <a href="/"><h1 class="text-4xl font-bold">PManagement</h1></a>
@@ -40,7 +40,7 @@
         {% endif %}
       </div>
     </header>
-    <main class="grow bg-purple-600 text-white">
+    <main class="grow bg-gradient-to-b from-purple-600 to-indigo-900">
       <div class="max-w-[80%] m-auto h-full">
         {% block main %}{% endblock %}
       </div>

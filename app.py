@@ -2,7 +2,7 @@ from flask import Flask, render_template, request, session, redirect
 from flask_session import Session
 import sqlite3
 
-from utils import login_required
+from utils import login_required, error
 
 app = Flask(__name__)
 
