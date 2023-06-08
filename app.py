@@ -2,6 +2,8 @@ from flask import Flask, render_template, request, session, redirect
 from flask_session import Session
 import sqlite3
 
+from utils import login_required
+
 app = Flask(__name__)
 
 app.config["SESSION_PERMANENT"] = False
@@ -11,7 +13,17 @@ connection = sqlite3.connect('projects.db')
 cursor = connection.cursor()
 
 
+@app.after_request
+def after_request(response):
+    """Ensure responses aren't cached"""
+    response.headers["Cache-Control"] = "no-cache, no-store, must-revalidate"
+    response.headers["Expires"] = 0
+    response.headers["Pragma"] = "no-cache"
+    return response
+
+
 @app.route("/")
+@login_required
 def index():
     # TODO
     return render_template('index.html')
