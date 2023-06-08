@@ -11,5 +11,5 @@ def login_required(f):
     return decorated_function
 
 
-def error(message):
-    return render_template('error.html', message=message)
+def error(message, code):
+    return render_template('error.html', message=message), code
