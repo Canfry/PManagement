@@ -14,7 +14,7 @@ Session(app)
 connection = sqlite3.connect('projects.db')
 cursor = connection.cursor()
 
-cursor.execute("create TABLE users IF NOT EXISTS (id INTEGER NOT NULL, name TEXT NOT NULL, email TEXT NOT NULL, position TEXT NOT NULL, team TEXT, PRIMARY KEY (id))")
+cursor.execute("create TABLE users IF NOT EXISTS (id INTEGER NOT NULL, name TEXT NOT NULL, email TEXT NOT NULL, hash TEXT NOT NULL, position TEXT NOT NULL, team TEXT, PRIMARY KEY (id))")
 cursor.execute("create TABLE teams IF NOT EXISTS (id INTEGER NOT NULL, name TEXT NOT NULL, description TEXT NOT NULL, FOREIGN KEY(user_id) REFERENCES users(id) ON DELETE CASCADE ON UPDATE CASCADE, FOREIGN KEY(project_id) REFERENCES projects(id) ON DELETE CASCADE ON UPDATE CASCADE")
 cursor.execute("create TABLE projects IF NOT EXISTS (id INTEGER NOT NULL, name TEXT NOT NULL, description TEXT NOT NULL, status TEXT NOT NULL, FOREIGN KEY(team_id) REFERENCES teams(id) ON DELETE CASCADE ON UPDATE CASCADE")
 
