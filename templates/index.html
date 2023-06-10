@@ -1,7 +1,19 @@
 {% extends 'layout.html' %}
 {% block main %}
-  <div class="flex items-center justify-center h-full">
-    <h1 class="text-3xl">Welcome to PManagement, an easy and fast solution to organize your Team projects and your
+  <div class="flex flex-col items-start justify-center gap-8 h-full">
+    <div>
+      <h1 class="text-4xl text-white">Welcome to PManagement, an easy and fast solution to organize your Team projects and your
       users affected to them.</h1>
+    </div>
+    <div class="flex items-center justify-center gap-8 w-full text-center">
+        <form action="/team" method="get">
+          <button type="submit" class="border border-pink-600 rounded-md py-1 px-3 bg-pink-600 hover:border-pink-700
+            hover:bg-pink-700 text-white text-2xl">Teams</button>
+        </form>
+        <form>
+          <button type="submit" class="border border-pink-600 rounded-md py-1 px-3 bg-pink-600 hover:border-pink-700
+            hover:bg-pink-700 text-white text-2xl">Projects</button>
+        </form>
+    </div>
   </div>
 {% endblock %}
