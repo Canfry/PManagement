@@ -131,30 +131,40 @@ def register():
 
 
 @app.route("/team")
-def team():
-    # TODO
-    return render_template('team.html')
+@login_required
+def team_page():
+    res = cursor.execute("SELECT * FROM teams")
+    teams = res.fetchall()
+    print(teams)
+    for team in range(len(teams)):
+        name = teams[team][1]
+        description = teams[team][2]
+        return render_template('team.html', name=name, description=description)
 
 
 @app.route("/project")
+@login_required
 def project():
     # TODO
     return render_template('project.html')
 
 
 @app.route("/newteam")
+@login_required
 def new_team():
     # TODO
     return render_template('newTeam.html')
 
 
 @app.route("/newproject")
+@login_required
 def new_project():
     # TODO
     return render_template('newProject.html')
 
 
 @app.route("/profile")
+@login_required
 def profile():
     # TODO
     return render_template('profile.html')

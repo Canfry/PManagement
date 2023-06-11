@@ -1,6 +1,38 @@
 {% extends 'layout.html' %}
 {% block main %}
-  <div class="flex items-center justify-center h-full">
-    <h1 class="text-3xl">Teams</h1>
+  <div class="bg-gradient-to-b from-white/90 to-white/70 rounded-md p-8 flex flex-col items-start justify-start gap-8 h-full mt-4">
+    <div>
+      <button class="border border-pink-600 rounded-md py-1 px-3 bg-pink-600 hover:border-pink-700
+            hover:bg-pink-700 text-white">Add Project</button>
+    </div>
+    <hr class="h-[0.075rem] bg-white w-full"/>
+    <div>
+      <h4 class="font-bold text-black/50">Name:</h4>
+    <h1 class="text-3xl">{{name.upper()}}</h1>
+    </div>
+    <div>
+      <h4 class="font-bold text-black/50">Description:</h4>
+      <p>{{description}}</p>
+    </div>
+    <div class="flex items-center justify-between w-full">
+      <div>
+        <h4 class="font-bold text-black/50">Users:</h4>
+        <input type="text" name="users">
+      </div>
+      <div>
+        <select>
+          <option selected="selected" value="Assign users" disabled>Assign users</option>
+          <option>veradev</option>
+          <option>fradev</option>
+          <option>aledev</option>
+        </select>
+      </div>
+
+    </div>
+    <div>
+      <h4 class="font-bold text-black/50">Projects:</h4>
+      <p>Project name</p>
+    </div>
+
   </div>
 {% endblock %}
