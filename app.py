@@ -61,26 +61,18 @@ def login():
 
         # Query database for username and password
         res = cursor.execute("SELECT username, hash, id FROM users")
-        data = res.fetchall()
-        print(data)
-        for user in range(len(data)):
-            username = data[user][0]
-            # print(data[user][0])
-            # print(data[user][1])
-            # print(data[user][2])
-            if username != request.form.get("username"):
-                return error("invalid username and/or password", 403)
-            elif not check_password_hash(data[user][1], request.form.get("password")):
-                return error("Invalid username and/or password", 403)
-            else:
-                # Remember which user has logged in
-                session["user_id"] = data[user][2]
-                session["user_name"] = username
-                print(session)
-                # Redirect user to home page
-                return redirect("/")
-
-        # User reached route via GET (as by clicking a link or via redirect)
+        users = res.fetchall()
+        print(users)
+        for user in range(len(users)):
+            try:
+                if request.form.get("username") in users[user][0] and check_password_hash(users[user][1], request.form.get("password")):
+                    session["user_id"] = users[user][2]
+                    session["user_name"] = users[user][0]
+                    print(session)
+                    print(users[user][0])
+                    return redirect("/")
+            except request.form.get("username") not in users[user][0] and not check_password_hash(users[user][1], request.form.get("password")):
+                error("Invalid username and/or password", 403)
     else:
         return render_template("login.html")
 
@@ -123,7 +115,8 @@ def register():
         print(user)
 
         # Remember which user has logged in
-        session["user_id"] = user[0]
+        session["user_id"] = user[0][0]
+        session["user_name"] = user[0][1]
 
         return redirect('/')
     else:
@@ -133,10 +126,14 @@ def register():
 @app.route("/team")
 @login_required
 def team_page():
-    res = cursor.execute("SELECT * FROM teams")
-    teams = res.fetchall()
+    res = cursor.execute("SELECT username, position FROM users")
+    users = res.fetchall()
+    print(users)
+    resp = cursor.execute("SELECT * FROM teams")
+    teams = resp.fetchall()
     print(teams)
-    for team in range(len(teams)):
+    for team in range(len(teams)) and user in users:
+        username = users[user][0]
         name = teams[team][1]
         description = teams[team][2]
         return render_template('team.html', name=name, description=description)
