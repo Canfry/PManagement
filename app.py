@@ -17,9 +17,9 @@ Session(app)
 connection = sqlite3.connect('projects.db', check_same_thread=False)
 cursor = connection.cursor()
 
-cursor.execute("create TABLE IF NOT EXISTS users (id INTEGER NOT NULL, name TEXT NOT NULL, username TEXT NOT NULL, email TEXT NOT NULL, hash TEXT NOT NULL, position TEXT NOT NULL, team TEXT, PRIMARY KEY (id))")
-cursor.execute("create TABLE IF NOT EXISTS teams (id INTEGER NOT NULL, name TEXT NOT NULL, description TEXT NOT NULL, user_id INTEGER, project_id INTEGER, FOREIGN KEY(user_id) REFERENCES users(id) ON DELETE CASCADE ON UPDATE CASCADE, FOREIGN KEY(project_id) REFERENCES projects(id) ON DELETE CASCADE ON UPDATE CASCADE)")
-cursor.execute("create TABLE IF NOT EXISTS projects (id INTEGER NOT NULL, name TEXT NOT NULL, description TEXT NOT NULL, status TEXT NOT NULL, team_id INTEGER, FOREIGN KEY(team_id) REFERENCES teams(id) ON DELETE CASCADE ON UPDATE CASCADE)")
+cursor.execute("create TABLE IF NOT EXISTS users (id INTEGER NOT NULL, name TEXT NOT NULL, username TEXT NOT NULL, email TEXT NOT NULL, hash TEXT NOT NULL, position TEXT NOT NULL, team_id INTEGER, FOREIGN KEY(team_id) REFERENCES teams(id), PRIMARY KEY (id))")
+cursor.execute("create TABLE IF NOT EXISTS teams (id INTEGER NOT NULL, name TEXT NOT NULL, description TEXT NOT NULL, user_id INTEGER, project_id INTEGER, FOREIGN KEY(user_id) REFERENCES users(id), FOREIGN KEY(project_id) REFERENCES projects(id))")
+cursor.execute("create TABLE IF NOT EXISTS projects (id INTEGER NOT NULL, name TEXT NOT NULL, description TEXT NOT NULL, status TEXT NOT NULL, team_id INTEGER, FOREIGN KEY(team_id) REFERENCES teams(id))")
 
 
 @app.after_request
@@ -62,7 +62,7 @@ def login():
         # Query database for username and password
         res = cursor.execute("SELECT username, hash, id FROM users")
         users = res.fetchall()
-        print(users)
+        # print(users)
         for user in range(len(users)):
             try:
                 if request.form.get("username") in users[user][0] and check_password_hash(users[user][1], request.form.get("password")):
@@ -91,7 +91,7 @@ def register():
         # Check if user exist
         res = cursor.execute('SELECT username FROM users')
         usernames = res.fetchall()
-        print(usernames)
+        # print(usernames)
         for username in range(len(usernames)):
             if request.form.get('username') == usernames[username][0]:
                 return error('User already exists', 403)
@@ -112,7 +112,7 @@ def register():
         # Query database by username
         res = cursor.execute("SELECT * FROM users WHERE username = ?", (username,))
         user = res.fetchall()
-        print(user)
+        # print(user)
 
         # Remember which user has logged in
         session["user_id"] = user[0][0]
@@ -126,17 +126,43 @@ def register():
 @app.route("/team")
 @login_required
 def team_page():
-    res = cursor.execute("SELECT username, position FROM users")
-    users = res.fetchall()
-    print(users)
     resp = cursor.execute("SELECT * FROM teams")
     teams = resp.fetchall()
     print(teams)
-    for team in range(len(teams)) and user in users:
-        username = users[user][0]
-        name = teams[team][1]
-        description = teams[team][2]
-        return render_template('team.html', name=name, description=description)
+    try:
+        for team in range(len(teams)):
+            return teams
+    except len(teams) < 1:
+        raise error('There is not team yet!!', 403)
+    return render_template('team.html', teams=teams)
+
+
+@app.route('/team/<team_id>')
+@login_required
+def single_team(team_id):
+    res = cursor.execute('SELECT * FROM teams where id = ?', team_id)
+    team = res.fetchone()
+    response = cursor.execute('SELECT name FROM users WHERE id = (SELECT user_id from teams WHERE id = ?)', team_id)
+    user = response.fetchone()
+    print(user)
+    print(team)
+    return render_template('teamId.html', team_id=team_id, team=team, user=user)
+
+
+@app.route("/assign-user", methods=["POST"])
+@login_required
+def assign_user():
+    if request.method == 'POST':
+        res = cursor.execute("SELECT username, id FROM users")
+        users = res.fetchall()
+        print(users)
+        for user in range(len(users)):
+            username = users[user][0]
+            user_id = users[user][1]
+            if request.form.get("username") == username:
+                cursor.execute("INSERT INTO teams (user_id) VALUES (?)", user_id)
+                connection.commit()
+        return redirect('/team')
 
 
 @app.route("/project")
@@ -146,11 +172,27 @@ def project():
     return render_template('project.html')
 
 
-@app.route("/newteam")
+@app.route("/newteam", methods=["POST", "GET"])
 @login_required
 def new_team():
-    # TODO
-    return render_template('newTeam.html')
+    if request.method == 'POST':
+        name = request.form.get('name')
+        description = request.form.get('description')
+        user = request.form.get('id')
+        res = cursor.execute('SELECT * FROM users')
+        users = res.fetchall()
+        for user in range(len(users)):
+            userid = users[user][0]
+            if user == users[user][0]:
+                cursor.execute('INSERT INTO teams (name, description, user_id) VALUES (?, ?, ?)', (name, description, userid))
+                response = cursor.execute('SELECT * FROM teams')
+                teams = response.fetchall()
+                for team in range(len(teams)):
+                    team_id = teams[team][0]
+                    cursor.execute('INSERT INTO users WHERE id = ? (team_id) VALUES (?)', (userid, team_id))
+                return render_template('newTeam.html', users=users, teams=teams)
+    else:
+        return redirect('team.html')
 
 
 @app.route("/newproject")

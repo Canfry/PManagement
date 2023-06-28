@@ -1,6 +1,28 @@
 {% extends 'layout.html' %}
 {% block main %}
   <div class="flex items-center justify-center h-full">
-    <h1 class="text-3xl">New Team</h1>
+    <div class="max-w-[95%] m-auto p-32 bg-white rounded-md">
+      <form action="/newteam" method="post" class="w-full">
+        <div class="mb-3 w-full">
+          {% for team in teams %}
+          <input type="hidden" name="id" value="{{ team.id }}" />
+          <input type="text" name="name" autocomplete="off" placeholder="Name" id="name" class="py-1 px-2 border border-gray-300 rounded-md"/>
+        </div>
+        <div class="mb-3 w-full">
+          <input type="text" name="description" autocomplete="off" placeholder="Description" id="description" class="py-1 px-2 border border-gray-300 rounded-md"/>
+        </div>
+        <div class="mb-3 w-full">
+          {% for user in users %}
+          <input type="hidden" name="id" value="{{ user.id }}"/>
+          <input type="text" name="user" autocomplete="off" placeholder="User" id="user" class="py-1 px-2 border border-gray-300 rounded-md"/>
+        </div>
+        <div class="mb-3 w-full">
+          <input type="text" name="project" autocomplete="off" placeholder="Project" id="project" class="py-1 px-2 border border-gray-300 rounded-md"/>
+        </div>
+        <div class="rounded-md bg-pink-600 text-center">
+          <button type="submit" class="py-2 px-4 text-white">Create Team</button>
+        </div>
+      </form>
+    </div>
   </div>
 {% endblock %}

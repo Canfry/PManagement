@@ -7,7 +7,7 @@
       <script src="https://cdn.tailwindcss.com"></script>
     <title>{% block title %}Project Management{% endblock %}</title>
   </head>
-  <body class="h-screen flex flex-col">
+  <body class="min-h-screen flex flex-col">
     <header class="w-full h-[160px] fixed-top bg-purple-600 text-white">
       <div class="max-w-[80%] m-auto h-full flex items-center justify-between">
         <div>
@@ -18,8 +18,8 @@
         </div>
         <div class="flex items-center justify-between gap-4">
           <nav class="flex items-center justify-between gap-4">
-            <a href="/" class="hover:font-bold">Home</a>
-            <a href="/profile" class="hover:font-bold">Profile</a>
+            <a href="/" class="hover:text-pink-400">Home</a>
+            <a href="/profile" class="hover:text-pink-400">Profile</a>
           </nav>
           <div>
           <a href="/logout">
@@ -42,8 +42,8 @@
         {% endif %}
       </div>
     </header>
-    <main class="grow bg-gradient-to-b from-purple-600 to-indigo-900">
-      <div class="max-w-[80%] m-auto h-full">
+    <main class="grow bg-gradient-to-b from-purple-600 to-indigo-900 grid place-items-center w-full">
+      <div class="w-[80%] m-auto h-full">
         {% block main %}{% endblock %}
       </div>
     </main>
