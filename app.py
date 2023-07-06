@@ -18,8 +18,8 @@ connection = sqlite3.connect('projects.db', check_same_thread=False)
 cursor = connection.cursor()
 
 cursor.execute("create TABLE IF NOT EXISTS users (id INTEGER NOT NULL, name TEXT NOT NULL, username TEXT NOT NULL, email TEXT NOT NULL, hash TEXT NOT NULL, position TEXT NOT NULL, team_id INTEGER, FOREIGN KEY(team_id) REFERENCES teams(id), PRIMARY KEY (id))")
-cursor.execute("create TABLE IF NOT EXISTS teams (id INTEGER NOT NULL, name TEXT NOT NULL, description TEXT NOT NULL, user_id INTEGER, project_id INTEGER, FOREIGN KEY(user_id) REFERENCES users(id), FOREIGN KEY(project_id) REFERENCES projects(id))")
-cursor.execute("create TABLE IF NOT EXISTS projects (id INTEGER NOT NULL, name TEXT NOT NULL, description TEXT NOT NULL, status TEXT NOT NULL, team_id INTEGER, FOREIGN KEY(team_id) REFERENCES teams(id))")
+cursor.execute("create TABLE IF NOT EXISTS teams (id INTEGER NOT NULL, name TEXT NOT NULL, description TEXT NOT NULL, user_id INTEGER, project_id INTEGER, FOREIGN KEY(user_id) REFERENCES users(id), FOREIGN KEY(project_id) REFERENCES projects(id), PRIMARY KEY (id))")
+cursor.execute("create TABLE IF NOT EXISTS projects (id INTEGER NOT NULL, name TEXT NOT NULL, description TEXT NOT NULL, status TEXT NOT NULL, team_id INTEGER, FOREIGN KEY(team_id) REFERENCES teams(id), PRIMARY KEY (id))")
 
 
 @app.after_request
@@ -129,10 +129,7 @@ def team_page():
     resp = cursor.execute("SELECT * FROM teams")
     teams = resp.fetchall()
     print(teams)
-    if len(teams) < 1:
-        error('There is not team yet!!', 403)
-    else:
-        return render_template('team.html', teams=teams)
+    return render_template('team.html', teams=teams)
 
 
 @app.route('/team/<team_id>')
