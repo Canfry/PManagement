@@ -129,12 +129,10 @@ def team_page():
     resp = cursor.execute("SELECT * FROM teams")
     teams = resp.fetchall()
     print(teams)
-    try:
-        for team in range(len(teams)):
-            return teams
-    except len(teams) < 1:
-        raise error('There is not team yet!!', 403)
-    return render_template('team.html', teams=teams)
+    if len(teams) < 1:
+        error('There is not team yet!!', 403)
+    else:
+        return render_template('team.html', teams=teams)
 
 
 @app.route('/team/<team_id>')
@@ -178,21 +176,20 @@ def new_team():
     if request.method == 'POST':
         name = request.form.get('name')
         description = request.form.get('description')
-        user = request.form.get('id')
         res = cursor.execute('SELECT * FROM users')
-        users = res.fetchall()
-        for user in range(len(users)):
-            userid = users[user][0]
-            if user == users[user][0]:
-                cursor.execute('INSERT INTO teams (name, description, user_id) VALUES (?, ?, ?)', (name, description, userid))
-                response = cursor.execute('SELECT * FROM teams')
-                teams = response.fetchall()
-                for team in range(len(teams)):
-                    team_id = teams[team][0]
-                    cursor.execute('INSERT INTO users WHERE id = ? (team_id) VALUES (?)', (userid, team_id))
-                return render_template('newTeam.html', users=users, teams=teams)
+        user_list = res.fetchall()
+        print(user_list)
+        try:
+            for user in range(len(user_list)):
+                if user_list[user][1] or user_list[user][2] == request.form.get('name'):
+                    cursor.execute('INSERT INTO teams (name, description, user_id) VALUES (?, ?, ?)', (name, description, user_list[user][0]))
+                    connection.commit()
+        except TypeError:
+            raise error('No user match', 403)
+
+        return redirect('/team')
     else:
-        return redirect('team.html')
+        return render_template('newTeam.html')
 
 
 @app.route("/newproject")
