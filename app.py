@@ -173,16 +173,25 @@ def new_team():
     if request.method == 'POST':
         name = request.form.get('name')
         description = request.form.get('description')
-        res = cursor.execute('SELECT * FROM users')
-        user_list = res.fetchall()
-        print(user_list)
-        try:
+        if not name or not description:
+            return error('name and description are required', 401)
+
+        username = request.form.get('user')
+        if not username:
+            cursor.execute('INSERT INTO teams (name, description) VALUES (?, ?)', (name, description))
+            connection.commit()
+        else:
+            res = cursor.execute('SELECT * FROM users')
+            user_list = res.fetchall()
+            print(user_list)
             for user in range(len(user_list)):
-                if user_list[user][1] or user_list[user][2] == request.form.get('name'):
+                if username == user_list[user][1]:
+                    print(username)
+                    print(user_list[user][1])
                     cursor.execute('INSERT INTO teams (name, description, user_id) VALUES (?, ?, ?)', (name, description, user_list[user][0]))
                     connection.commit()
-        except TypeError:
-            raise error('No user match', 403)
+                else:
+                    return error('No user matches', 403)
 
         return redirect('/team')
     else:
