@@ -132,16 +132,29 @@ def team_page():
     return render_template('team.html', teams=teams)
 
 
-@app.route('/team/<team_id>')
+@app.route('/team/<team_id>', methods=['GET', 'POST'])
 @login_required
 def single_team(team_id):
-    res = cursor.execute('SELECT * FROM teams where id = ?', team_id)
-    team = res.fetchone()
-    response = cursor.execute('SELECT name FROM users WHERE id = (SELECT user_id from teams WHERE id = ?)', team_id)
-    user = response.fetchone()
-    print(user)
-    print(team)
-    return render_template('teamId.html', team_id=team_id, team=team, user=user)
+    if request.method == 'POST':
+        username = request.form.get('username')
+        response = cursor.execute("SELECT * FROM users")
+        users = response.fetchall()
+        for user in range(len(users)):
+            if username == users[user][1]:
+                print(users)
+                print(username)
+                cursor.execute('UPDATE users SET team_id = ? WHERE name = ?', (team_id, users[user][1]))
+                connection.commit()
+            else:
+                return error('No user matches', 403)
+    else:
+        res = cursor.execute('SELECT * FROM teams where id = ?', team_id)
+        team = res.fetchone()
+        response = cursor.execute('SELECT name FROM users WHERE id = (SELECT user_id from teams WHERE id = ?)', team_id)
+        user = response.fetchone()
+        print(user)
+        print(team)
+        return render_template('teamId.html', team_id=team_id, team=team, user=user)
 
 
 @app.route("/assign-user", methods=["POST"])
@@ -157,7 +170,7 @@ def assign_user():
             if request.form.get("username") == username:
                 cursor.execute("INSERT INTO teams (user_id) VALUES (?)", user_id)
                 connection.commit()
-        return redirect('/team')
+        return redirect('/team/<team_id>')
 
 
 @app.route("/project")
