@@ -21,6 +21,13 @@
         <!--<h4 class="font-bold text-black/50">Description:</h4> -->
         <p>{{team[2]}}</p>
       </div>
+      {% if team[3] == 'N' %}
+      <div></div>
+      {% else %}
+      <div>
+        <p>{{team[3]}}</p>
+      </div>
+      {% endif %}
     </div>
     <hr class="h-[0.15rem] bg-black/30 w-full"/>
     {% endfor %}

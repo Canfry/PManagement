@@ -129,6 +129,21 @@ def team_page():
     resp = cursor.execute("SELECT * FROM teams")
     teams = resp.fetchall()
     print(teams)
+    for team in range(len(teams)):
+        team_id = teams[team][0]
+        response = cursor.execute('SELECT name FROM users WHERE id = (SELECT user_id from teams WHERE id = ?)', (team_id, ))
+        user = response.fetchone()
+        # print(user)
+        if user is None:
+            user = str(None)
+        username = str(user[0])
+        print(username)
+        team_list = list(teams[team])
+        team_list[3] = username
+        print(team_list)
+        teams[team] = tuple(team_list)
+        print(teams)
+
     return render_template('team.html', teams=teams)
 
 
@@ -198,12 +213,13 @@ def new_team():
             user_list = res.fetchall()
             print(user_list)
             for user in range(len(user_list)):
-                if username == user_list[user][1]:
-                    print(username)
-                    print(user_list[user][1])
-                    cursor.execute('INSERT INTO teams (name, description, user_id) VALUES (?, ?, ?)', (name, description, user_list[user][0]))
-                    connection.commit()
-                else:
+                try:
+                    if username == user_list[user][1]:
+                        print(username)
+                        print(user_list[user][1])
+                        cursor.execute('INSERT INTO teams (name, description, user_id) VALUES (?, ?, ?)', (name, description, user_list[user][0]))
+                        connection.commit()
+                except username != user_list[user][1]:
                     return error('No user matches', 403)
 
         return redirect('/team')
